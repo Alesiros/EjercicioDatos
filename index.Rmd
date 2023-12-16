@@ -1,0 +1,78 @@
+---
+title: "Ejercicio BANXICO"
+author: "Alesi Rosas"
+date: "2023-12-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("siebanxicor")
+setToken("7d8baec3fd6391385dee1cf87f587ce5f99cc9a5cee52640a53ded712b68f231")
+```
+
+
+## Introducción
+
+En esta presentación se anailizara varios indices de precios, con la finalidad de encontrar cuales son las categorias que incrementan o estan más presentes en la inflación.
+
+Para esto se elaborará una tabla de datos, recopilando en series de tiempo quincenales, de los indices:
+
+1.  Índice general de precios al consumidor ("SP8664").
+
+2.  Índice de precios al consumidor subyacente ("SSP74632").
+
+3.  Índice de precios al consumidor no subyacente ("SP74637").
+
+4.  Índice de precios al consumidor subyacente de mercancías ("SP74637").
+
+5.  Índice de precios al consumidor subyacente de servicios ("SP74635").
+
+6.  Índice de precios al consumidor no subyacente de agropecuarios ("SP56378").
+
+7.  Índice de precios al consumidor no subyacente de energéticos y tarifas autorizadas por el gobierno ("SP74638").
+
+## Desarrollo
+
+### Recopilación de datos
+
+Para analizar los indices al precio al consumidor se utilizaranlos datos dados por el Banco De México. Analizaremos la alza de los precios desde el primero de enero de 2010, hasta el primero de enerdo de 2023.
+
+```{r ,eco=FALSE}
+series = c("SP8664","SP74632","SP74633","SP74635","SP74637","SP56378","SP74638")
+tablaDatos = getSeriesData(series, '2010-01-01', '2023-01-01')
+
+datosEntrada=data.frame("Fecha"=tablaDatos$SP8664$date,"INPC"=tablaDatos$SP8664$value,"INPCSub"=tablaDatos$SP74632$value, "INPCSubMerca"=tablaDatos$SP74633$value,"INPCSubSer"=tablaDatos$SP74635$value,"INPCNoSub"=tablaDatos$SP74637$value,"INPCNoSubAgro"=tablaDatos$SP56378$value, "INPCNoSubEneYTari"=tablaDatos$SP74638$value)
+datosEntrada
+```
+
+Como podemos apreciar, los pecios de la tabla de datos estan en valores nominales, para ver y comprender mejor como ha subido, se convertiran los valores nominales la tabla a valores reales, partiendo como la base el primero de enero de 2010.
+
+```{r}
+datosEntrada$INPC=(datosEntrada$INPC/datosEntrada$INPC[1])*100
+datosEntrada$INPCSub=(datosEntrada$INPCSub/datosEntrada$INPCSub[1])*100
+datosEntrada$INPCSubMerca=(datosEntrada$INPCSubMerca/datosEntrada$INPCSubMerca[1])*100
+datosEntrada$INPCSubSer=(datosEntrada$INPCSubSer/datosEntrada$INPCSubSer[1])*100
+datosEntrada$INPCNoSub=(datosEntrada$INPCNoSub/datosEntrada$INPCNoSub[1])*100
+datosEntrada$INPCNoSubAgro=(datosEntrada$INPCNoSubAgro/datosEntrada$INPCNoSubAgro[1])*100
+datosEntrada$INPCNoSubEneYTari=(datosEntrada$INPCNoSubEneYTari/datosEntrada$INPCNoSubEneYTari[1])*100
+
+datosEntrada
+```
+Ahora que tenemos la tabla en valores reales, haremos una resumen para ver los valores más importantes de los índices del precio al consumidor.
+
+```{r}
+resumen=summary(datosEntrada[,2:8])
+resumen
+```
+
+De este modo podemos apreciar la información, se observa que en las categorías del Indice de precios al cosumidor no subyacente tienen variación de valores curiosos, ya que en estos se ve como tienen los valores más elevados que la categoría de subyacente.
+Con esta pequeña obsevación obvimanete podremos deducir que la los precios no subyacentes son más volatiles, por ende estos son más inestables y se ve su cambio directamente nivel general de precios.
+En este rubro se ve que los precios agropecuarios son más inestables que los precios de las energías y tarifas, por como se aprecia en su mínimo y su máximo, siendo la categoría que más mueve el índice de precios al consumidor en general.
+
+## Conclución
+
+Gracias a la recopilación de los datos brindados en BANXICO, pudimos ver como se han movido los precios desde el primero de enero de 2010 hasta el primero de enero de 2023.
+Así se elaboro una tabla con los datos y se sacó los valores más relevantes, donde se observo que como la categoría lo dice, los precios no subyacentes son los más volatiles e inestables, moviendose desde 95 puntos bases hasta casi el doble o más. 
+Y dentro de esta categoría, se ve que los precios de los productos agropecuarios son los que más se mueven, en comparación con las energías y tarifas.
+Por lo cual podemos determinar que el sector que actua de forma relevante en el aumento generalizado de precios es el sector Agropecuario.
